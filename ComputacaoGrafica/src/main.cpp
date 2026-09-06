@@ -19,7 +19,10 @@ int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
 
-    glutInitDisplayMode(GLUT_DOUBLE);
+    glutInitDisplayMode(
+        GLUT_DOUBLE |
+        GLUT_DEPTH
+    );
 
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(50, 50);
@@ -55,6 +58,11 @@ void display() {
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
     );
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    desenhar_cubo(cubo);
 
     glutSwapBuffers();
 }

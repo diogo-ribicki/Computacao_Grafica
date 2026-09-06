@@ -1,3 +1,4 @@
+#include "GL/glut.h"
 #include "Cubo.hpp"
 
 Cubo criar_cubo(
@@ -51,4 +52,33 @@ Cubo criar_cubo(
     };
 
     return novo_cubo;
+}
+
+void desenhar_cubo(const Cubo& cubo) {
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    glBegin(GL_LINES);
+
+
+    for (const Aresta& aresta : cubo.arestas) {
+        const Vertice& vertice_origem =
+            cubo.vertices[aresta.first];
+
+        const Vertice& vertice_destino =
+            cubo.vertices[aresta.second];
+
+        glVertex3f(
+            static_cast<GLfloat>(vertice_origem.x),
+            static_cast<GLfloat>(vertice_origem.y),
+            static_cast<GLfloat>(vertice_origem.z)
+        );
+
+        glVertex3f(
+            static_cast<GLfloat>(vertice_destino.x),
+            static_cast<GLfloat>(vertice_destino.y),
+            static_cast<GLfloat>(vertice_destino.z)
+        );
+    }
+
+    glEnd();
 }
