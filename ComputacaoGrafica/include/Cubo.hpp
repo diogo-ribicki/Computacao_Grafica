@@ -16,3 +16,5 @@ Cubo criar_cubo(
     double posicao_z,
     double tamanho_lado
 );
+
+void desenhar_cubo(const Cubo& cubo);
