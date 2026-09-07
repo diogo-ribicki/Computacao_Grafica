@@ -1,3 +1,4 @@
+#include <cmath>
 #include "GL/glut.h"
 #include "Cubo.hpp"
 
@@ -109,6 +110,93 @@ void escalar_cubo(
 
     }
 
+}
+
+
+void rotacionar_cubo_x(
+    Cubo& cubo,
+    double angulo_graus
+) {
+    const double PI = 3.14159265358979323846;
+    double angulo = angulo_graus * PI / 180.0;
+
+    double seno = std::sin(angulo);
+    double cosseno = std::cos(angulo);
+
+    for (Vertice& vertice : cubo.vertices) {
+
+        // Leva o vertice para o centro do cubo
+        double x = vertice.x - cubo.posicao.x;
+        double y = vertice.y - cubo.posicao.y;
+        double z = vertice.z - cubo.posicao.z;
+
+        // Rotação no plano YZ
+        double novo_y = y * cosseno - z * seno;
+        double novo_z = y * seno + z * cosseno;
+
+        // Retorna o centro original
+        vertice.x = x + cubo.posicao.x;
+        vertice.y = novo_y + cubo.posicao.y;
+        vertice.z = novo_z + cubo.posicao.z;
+
+    }
+}
+
+void rotacionar_cubo_y(
+    Cubo& cubo,
+    double angulo_graus
+) {
+    const double PI = 3.14159265358979323846;
+    double angulo = angulo_graus * PI / 180.0;
+
+    double seno = std::sin(angulo);
+    double cosseno = std::cos(angulo);
+
+    for (Vertice& vertice : cubo.vertices) {
+
+        // Leva o vertice para o centro do cubo
+        double x = vertice.x - cubo.posicao.x;
+        double y = vertice.y - cubo.posicao.y;
+        double z = vertice.z - cubo.posicao.z;
+
+        // Rotação no plano XZ
+        double novo_x = x * cosseno - z * seno;
+        double novo_z = -x * seno + z * cosseno;
+
+        // Retorna o centro original
+        vertice.x = novo_x + cubo.posicao.x;
+        vertice.y = y + cubo.posicao.y;
+        vertice.z = novo_z + cubo.posicao.z;
+
+    }
+}
+
+void rotacionar_cubo_z(
+    Cubo& cubo,
+    double angulo_graus
+) {
+    const double PI = 3.14159265358979323846;
+    double angulo = angulo_graus * PI / 180.0;
+
+    double seno = std::sin(angulo);
+    double cosseno = std::cos(angulo);
+
+    for (Vertice& vertice : cubo.vertices) {
+
+        // Leva o vertice para o centro do cubo
+        double x = vertice.x - cubo.posicao.x;
+        double y = vertice.y - cubo.posicao.y;
+        double z = vertice.z - cubo.posicao.z;
+
+        // Rotação no plano XY
+        double novo_x = x * cosseno - y * seno;
+        double novo_y = x * seno + y * cosseno;
+
+        // Retorna o centro original
+        vertice.x = novo_x + cubo.posicao.x;
+        vertice.y = novo_y + cubo.posicao.y;
+        vertice.z = z + cubo.posicao.z;
+    }
 }
 
 void desenhar_cubo(const Cubo& cubo) {
