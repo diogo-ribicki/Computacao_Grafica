@@ -32,4 +32,19 @@ void escalar_cubo(
 
 );
 
+void rotacionar_cubo_x(
+    Cubo& cubo,
+    double angulo_graus
+);
+
+void rotacionar_cubo_y(
+    Cubo& cubo,
+    double angulo_graus
+);
+
+
+void rotacionar_cubo_z(
+    Cubo& cubo,
+    double angulo_graus
+);
 void desenhar_cubo(const Cubo& cubo);
