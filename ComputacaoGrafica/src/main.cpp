@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     cubo = criar_cubo(
         0.0,
         0.0,
-        -6.0,
+        -6.0, // Posiciona o cubo na frente da camers
         2.0
     );
 

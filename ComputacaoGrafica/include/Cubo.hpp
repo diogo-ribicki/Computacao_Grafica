@@ -17,4 +17,11 @@ Cubo criar_cubo(
     double tamanho_lado
 );
 
+void movimentar_cubo(
+    Cubo& cubo,
+    double deslocamento_x,
+    double deslocamento_y,
+    double deslocamento_z
+);
+
 void desenhar_cubo(const Cubo& cubo);
