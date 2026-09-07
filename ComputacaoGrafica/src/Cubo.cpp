@@ -161,7 +161,7 @@ void rotacionar_cubo_y(
 
         // Rotação no plano XZ
         double novo_x = x * cosseno - z * seno;
-        double novo_z = -x * seno + z * cosseno;
+        double novo_z = x * seno + z * cosseno;
 
         // Retorna o centro original
         vertice.x = novo_x + cubo.posicao.x;
