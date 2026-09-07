@@ -24,4 +24,12 @@ void movimentar_cubo(
     double deslocamento_z
 );
 
+void escalar_cubo(
+    Cubo& cubo,
+    double escala_x,
+    double escala_y,
+    double escala_z
+
+);
+
 void desenhar_cubo(const Cubo& cubo);

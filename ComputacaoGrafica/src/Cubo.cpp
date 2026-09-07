@@ -68,15 +68,45 @@ void movimentar_cubo(
     // Z' = Z+deltaZ
 
     // Alterar o centro
-    cubo.posicao += deslocamento_x;
-    cubo.posicao += deslocamento_y;
-    cubo.posicao += deslocamento_z;
+    cubo.posicao.x += deslocamento_x;
+    cubo.posicao.y += deslocamento_y;
+    cubo.posicao.z += deslocamento_z;
 
     // Alteramos os vértices
-    for (Vertice& vertioce : cubo.vertices) {
+    for (Vertice& vertice : cubo.vertices) {
         vertice.x += deslocamento_x;
         vertice.y += deslocamento_y;
         vertice.z += deslocamento_z;
+    }
+
+}
+
+
+void escalar_cubo(
+    Cubo& cubo,
+    double escala_x,
+    double escala_y,
+    double escala_z
+
+) {
+
+    for (Vertice& vertice : cubo.vertices) {
+
+        // Desloca vértice para centro do cubo
+        vertice.x -= cubo.posicao.x;
+        vertice.y -= cubo.posicao.y;
+        vertice.z -= cubo.posicao.z;
+
+        // Aplica a escala nos eixos
+        vertice.x *= escala_x;
+        vertice.y *= escala_y;
+        vertice.z *= escala_z;
+
+        // Devole o vértice para sua posição original
+        vertice.x += cubo.posicao.x;
+        vertice.y += cubo.posicao.y;
+        vertice.z += cubo.posicao.z;
+
     }
 
 }
