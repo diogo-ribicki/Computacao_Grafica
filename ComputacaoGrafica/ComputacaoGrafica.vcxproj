@@ -335,6 +335,10 @@
 
 		<ClCompile Include="src\Cubo.cpp" />
 
+		<ClCompile Include="src\OBJLoader.cpp" />
+
+		<ClCompile Include="src\OBJRenderer.cpp" />
+
 	</ItemGroup>
 
 	<ItemGroup>
@@ -342,6 +346,12 @@
 		<ClInclude Include="include\Geometria.hpp" />
 
 		<ClInclude Include="include\Cubo.hpp" />
+
+		<ClInclude Include="include\ModeloOBJ.hpp" />
+
+		<ClInclude Include="include\OBJLoader.hpp" />
+
+		<ClInclude Include="include\OBJRenderer.hpp" />
 
 	</ItemGroup>
 
