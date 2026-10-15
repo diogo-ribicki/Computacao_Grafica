@@ -1,3 +1,4 @@
+
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
@@ -13,14 +14,11 @@
 
 ModeloOBJ modelo;
 
-
-// Caminho do OBJ utilizado nesta etapa.
-const std::string CAMINHO_MODELO =
-"data/porsche.obj";
+// Caminho do OBJ utilizado no projeto.
+const std::string CAMINHO_MODELO = "data/porsche.obj";
 
 
-// Dados utilizados somente para enquadrar
-// o modelo dentro da camera.
+// Enquadramento automatico do OBJ.
 GLfloat centroModeloX = 0.0f;
 GLfloat centroModeloY = 0.0f;
 GLfloat centroModeloZ = 0.0f;
@@ -28,32 +26,45 @@ GLfloat centroModeloZ = 0.0f;
 GLfloat escalaModelo = 1.0f;
 
 
+// Estado das transformacoes controladas pelo teclado.
+GLfloat posicaoX = 0.0f;
+GLfloat posicaoY = 0.0f;
+GLfloat posicaoZ = 0.0f;
+
+GLfloat rotacaoX = 0.0f;
+GLfloat rotacaoY = 0.0f;
+GLfloat rotacaoZ = 0.0f;
+
+GLfloat escalaTransformacao = 1.0f;
+
+
+// Incrementos utilizados nos controles.
+const GLfloat PASSO_MOVIMENTO = 0.2f;
+const GLfloat PASSO_ROTACAO = 5.0f;
+
+const GLfloat FATOR_AUMENTO = 1.1f;
+const GLfloat FATOR_REDUCAO = 0.9f;
+
+const GLfloat ESCALA_MINIMA = 0.1f;
+const GLfloat ESCALA_MAXIMA = 5.0f;
+
+
+// Prototipos.
 void initGL();
 
 void display();
 
-void reshape(
-    GLsizei width,
-    GLsizei height
-);
+void reshape(GLsizei width, GLsizei height);
 
-void keyboard(
-    unsigned char key,
-    int x,
-    int y
-);
+void keyboard(unsigned char key, int x, int y);
+
+void keyboardSpecial(int key, int x, int y);
 
 void calcularEnquadramentoModelo();
 
 
-int main(
-    int argc,
-    char** argv
-) {
-    glutInit(
-        &argc,
-        argv
-    );
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
 
     glutInitDisplayMode(
         GLUT_DOUBLE |
@@ -61,33 +72,21 @@ int main(
         GLUT_DEPTH
     );
 
-    glutInitWindowSize(
-        640,
-        480
-    );
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(50, 50);
 
-    glutInitWindowPosition(
-        50,
-        50
-    );
-
-    glutCreateWindow(
-        "M2 - Renderizacao OBJ"
-    );
-
+    glutCreateWindow("M2 - Transformacoes OBJ");
 
     initGL();
 
-
+    // Carrega o modelo OBJ.
     std::string mensagemErro;
 
-    if (
-        !carregarOBJ(
-            CAMINHO_MODELO,
-            modelo,
-            mensagemErro
-        )
-        ) {
+    if (!carregarOBJ(
+        CAMINHO_MODELO,
+        modelo,
+        mensagemErro
+    )) {
         std::cerr
             << "Erro ao carregar OBJ: "
             << mensagemErro
@@ -96,11 +95,8 @@ int main(
         return 1;
     }
 
-
-    if (
-        modelo.vertices.empty() ||
-        modelo.faces.empty()
-        ) {
+    if (modelo.vertices.empty() ||
+        modelo.faces.empty()) {
         std::cerr
             << "O arquivo OBJ nao possui "
             << "vertices ou faces para renderizar."
@@ -109,9 +105,9 @@ int main(
         return 1;
     }
 
-
+    // Calcula o centro e a escala inicial
+    // sem alterar os vertices do modelo.
     calcularEnquadramentoModelo();
-
 
     std::cout
         << "OBJ carregado com sucesso."
@@ -138,18 +134,12 @@ int main(
         << std::endl;
 
 
-    glutDisplayFunc(
-        display
-    );
+    // Registra as funcoes de callback.
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
 
-    glutReshapeFunc(
-        reshape
-    );
-
-    glutKeyboardFunc(
-        keyboard
-    );
-
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(keyboardSpecial);
 
     glutMainLoop();
 
@@ -165,114 +155,120 @@ void initGL() {
         1.0f
     );
 
-    glClearDepth(
-        1.0f
-    );
+    glClearDepth(1.0f);
 
+    // Mantem o teste de profundidade.
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
-    // Mantem o depth buffer utilizado
-    // anteriormente pelo projeto.
-    glEnable(
-        GL_DEPTH_TEST
-    );
-
-    glDepthFunc(
-        GL_LEQUAL
-    );
-
-
-    // Queremos superficies preenchidas,
-    // e nao wireframe.
+    // Renderiza as faces preenchidas.
     glPolygonMode(
         GL_FRONT_AND_BACK,
         GL_FILL
     );
 
-
-    // Iluminacao e textura serao configuradas
-    // nas proximas etapas da M2.
-    glDisable(
-        GL_LIGHTING
-    );
-
-    glDisable(
-        GL_TEXTURE_2D
-    );
+    // Iluminacao e textura serao
+    // implementadas em outras etapas.
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
 }
 
 
 void display() {
+    // Limpa os buffers a cada redesenho.
     glClear(
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
     );
 
-
-    glMatrixMode(
-        GL_MODELVIEW
-    );
-
+    // Seleciona a matriz ModelView.
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-
-    // Afasta o modelo da camera.
+    // Posicionamento fixo da camera.
     glTranslatef(
         0.0f,
         0.0f,
         -5.0f
     );
 
+    // Salva a matriz antes das
+    // transformacoes especificas do objeto.
+    glPushMatrix();
 
-    // Ajusta modelos de tamanhos diferentes
-    // para uma escala adequada a visualizacao.
+    // 1. Transladar o modelo.
+    glTranslatef(
+        posicaoX,
+        posicaoY,
+        posicaoZ
+    );
+
+    // 2. Rotacionar nos tres eixos.
+    glRotatef(
+        rotacaoX,
+        1.0f, 0.0f, 0.0f
+    );
+
+    glRotatef(
+        rotacaoY,
+        0.0f, 1.0f, 0.0f
+    );
+
+    glRotatef(
+        rotacaoZ,
+        0.0f, 0.0f, 1.0f
+    );
+
+    // 3. Escala controlada pelo teclado.
+    glScalef(
+        escalaTransformacao,
+        escalaTransformacao,
+        escalaTransformacao
+    );
+
+    // 4. Escala automatica do OBJ.
     glScalef(
         escalaModelo,
         escalaModelo,
         escalaModelo
     );
 
-
-    // Coloca o centro geometrico do modelo
-    // na origem antes do desenho.
+    // 5. Centraliza o modelo em relacao
+    // ao centro calculado no enquadramento.
     glTranslatef(
         -centroModeloX,
         -centroModeloY,
         -centroModeloZ
     );
 
-
-    // Como ainda nao ha iluminacao nem textura,
-    // utilizamos uma cor simples para visualizar
-    // as superficies.
+    // Cor temporaria enquanto nao
+    // implementamos iluminacao e textura.
     glColor3f(
         0.8f,
         0.8f,
         0.8f
     );
 
+    // Renderiza as faces do OBJ
+    // utilizando GL_TRIANGLES.
+    desenharModeloOBJ(modelo);
 
-    desenharModeloOBJ(
-        modelo
-    );
+    // Restaura a matriz anterior.
+    glPopMatrix();
 
-
+    // Exibe o quadro final.
     glutSwapBuffers();
 }
 
 
-void reshape(
-    GLsizei width,
-    GLsizei height
-) {
+void reshape(GLsizei width, GLsizei height) {
     if (height == 0) {
         height = 1;
     }
 
-
     GLfloat aspect =
         static_cast<GLfloat>(width) /
         static_cast<GLfloat>(height);
-
 
     glViewport(
         0,
@@ -281,16 +277,10 @@ void reshape(
         height
     );
 
-
-    glMatrixMode(
-        GL_PROJECTION
-    );
-
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-
-    // Mantem a visualizacao em perspectiva
-    // ja utilizada pelo projeto.
+    // Mantem a perspectiva da develop.
     gluPerspective(
         45.0f,
         aspect,
@@ -298,31 +288,131 @@ void reshape(
         100.0f
     );
 
-
-    glMatrixMode(
-        GL_MODELVIEW
-    );
+    glMatrixMode(GL_MODELVIEW);
 }
 
 
-void keyboard(
-    unsigned char key,
-    int x,
-    int y
-) {
+// Teclas comuns: escala e rotacao.
+void keyboard(unsigned char key, int x, int y) {
+    bool alterouTransformacao = true;
+
     switch (key) {
 
-        // ESC
+        // Encerra o programa.
     case 27:
         std::exit(0);
         break;
 
-    default:
+        // Aumenta a escala.
+    case 'p':
+    case 'P':
+        escalaTransformacao = std::min(
+            ESCALA_MAXIMA,
+            escalaTransformacao * FATOR_AUMENTO
+        );
         break;
+
+        // Reduz a escala.
+    case 'o':
+    case 'O':
+        escalaTransformacao = std::max(
+            ESCALA_MINIMA,
+            escalaTransformacao * FATOR_REDUCAO
+        );
+        break;
+
+        // Rotacao positiva em X.
+    case 'x':
+        rotacaoX += PASSO_ROTACAO;
+        break;
+
+        // Rotacao negativa em X.
+    case 'X':
+        rotacaoX -= PASSO_ROTACAO;
+        break;
+
+        // Rotacao positiva em Y.
+    case 'y':
+        rotacaoY += PASSO_ROTACAO;
+        break;
+
+        // Rotacao negativa em Y.
+    case 'Y':
+        rotacaoY -= PASSO_ROTACAO;
+        break;
+
+        // Rotacao positiva em Z.
+    case 'z':
+        rotacaoZ += PASSO_ROTACAO;
+        break;
+
+        // Rotacao negativa em Z.
+    case 'Z':
+        rotacaoZ -= PASSO_ROTACAO;
+        break;
+
+    default:
+        alterouTransformacao = false;
+        break;
+    }
+
+    // Solicita um novo desenho somente
+    // quando uma transformacao for alterada.
+    if (alterouTransformacao) {
+        glutPostRedisplay();
     }
 }
 
 
+// Teclas especiais: translacao nos eixos.
+void keyboardSpecial(int key, int x, int y) {
+    bool alterouTransformacao = true;
+
+    switch (key) {
+
+        // Movimenta para a esquerda.
+    case GLUT_KEY_LEFT:
+        posicaoX -= PASSO_MOVIMENTO;
+        break;
+
+        // Movimenta para a direita.
+    case GLUT_KEY_RIGHT:
+        posicaoX += PASSO_MOVIMENTO;
+        break;
+
+        // Movimenta para cima.
+    case GLUT_KEY_UP:
+        posicaoY += PASSO_MOVIMENTO;
+        break;
+
+        // Movimenta para baixo.
+    case GLUT_KEY_DOWN:
+        posicaoY -= PASSO_MOVIMENTO;
+        break;
+
+        // Aproxima o modelo da camera.
+    case GLUT_KEY_PAGE_UP:
+        posicaoZ += PASSO_MOVIMENTO;
+        break;
+
+        // Afasta o modelo da camera.
+    case GLUT_KEY_PAGE_DOWN:
+        posicaoZ -= PASSO_MOVIMENTO;
+        break;
+
+    default:
+        alterouTransformacao = false;
+        break;
+    }
+
+    if (alterouTransformacao) {
+        glutPostRedisplay();
+    }
+}
+
+
+// Calcula o enquadramento inicial do OBJ.
+// Funcao preservada da implementacao anterior.
 void calcularEnquadramentoModelo() {
     if (modelo.vertices.empty()) {
         return;
@@ -342,9 +432,9 @@ void calcularEnquadramentoModelo() {
     std::sort(valoresY.begin(), valoresY.end());
     std::sort(valoresZ.begin(), valoresZ.end());
 
-    // Ignora os 1% menores e 1% maiores valores
-    // para evitar que vertices muito distantes
-    // distorcam o enquadramento.
+    // Ignora os 1% menores e os 1% maiores
+    // valores para reduzir distorcoes causadas
+    // por vertices muito distantes.
     const std::size_t quantidade = valoresX.size();
 
     const std::size_t inicio =
