@@ -156,12 +156,20 @@
 
 		<LinkIncremental>true</LinkIncremental>
 
+		<LocalDebuggerWorkingDirectory>
+			$(ProjectDir)
+		</LocalDebuggerWorkingDirectory>
+
 	</PropertyGroup>
 
 	<PropertyGroup
         Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 
 		<LinkIncremental>false</LinkIncremental>
+
+		<LocalDebuggerWorkingDirectory>
+			$(ProjectDir)
+		</LocalDebuggerWorkingDirectory>
 
 	</PropertyGroup>
 
@@ -341,6 +349,8 @@
 
 		<ClCompile Include="src\Iluminacao.cpp" />
 
+		<ClCompile Include="src\TexturaBMP.cpp" />
+
 	</ItemGroup>
 
 	<ItemGroup>
@@ -356,6 +366,8 @@
 		<ClInclude Include="include\OBJRenderer.hpp" />
 
 		<ClInclude Include="include\Iluminacao.hpp" />
+
+		<ClInclude Include="include\TexturaBMP.hpp" />
 
 	</ItemGroup>
 

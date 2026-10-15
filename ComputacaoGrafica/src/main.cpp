@@ -1,4 +1,3 @@
-
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
@@ -11,12 +10,18 @@
 #include "OBJLoader.hpp"
 #include "OBJRenderer.hpp"
 #include "Iluminacao.hpp"
+#include "TexturaBMP.hpp"
 
 
+// Modelo geometrico e textura visual.
+// Sao recursos independentes.
 ModeloOBJ modelo;
+TexturaBMP texturaBMP;
 
-// Caminho do OBJ utilizado no projeto.
-const std::string CAMINHO_MODELO = "data/porsche.obj";
+
+// Caminhos relativos a pasta do projeto.
+const std::string CAMINHO_MODELO = "data/radar.obj";
+const std::string CAMINHO_TEXTURA = "Textures/launch.bmp";
 
 
 // Enquadramento automatico do OBJ.
@@ -27,7 +32,7 @@ GLfloat centroModeloZ = 0.0f;
 GLfloat escalaModelo = 1.0f;
 
 
-// Estado das transformacoes controladas pelo teclado.
+// Estado das transformacoes.
 GLfloat posicaoX = 0.0f;
 GLfloat posicaoY = 0.0f;
 GLfloat posicaoZ = 0.0f;
@@ -39,7 +44,7 @@ GLfloat rotacaoZ = 0.0f;
 GLfloat escalaTransformacao = 1.0f;
 
 
-// Incrementos utilizados nos controles.
+// Incrementos dos controles.
 const GLfloat PASSO_MOVIMENTO = 0.2f;
 const GLfloat PASSO_ROTACAO = 5.0f;
 
@@ -76,13 +81,14 @@ int main(int argc, char** argv) {
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(50, 50);
 
-    glutCreateWindow("M2 - Iluminacao OBJ");
+    glutCreateWindow("M2 - Texturas OBJ");
 
+    // Inicializa o estado OpenGL.
     initGL();
 
-    // Carrega o modelo OBJ.
     std::string mensagemErro;
 
+    // Carrega a geometria do OBJ.
     if (!carregarOBJ(
         CAMINHO_MODELO,
         modelo,
@@ -98,6 +104,7 @@ int main(int argc, char** argv) {
 
     if (modelo.vertices.empty() ||
         modelo.faces.empty()) {
+
         std::cerr
             << "O arquivo OBJ nao possui "
             << "vertices ou faces para renderizar."
@@ -107,8 +114,22 @@ int main(int argc, char** argv) {
     }
 
     // Calcula o centro e a escala inicial
-    // sem alterar os vertices do modelo.
+    // sem modificar os vertices originais.
     calcularEnquadramentoModelo();
+
+    // Carrega a imagem BMP e cria a
+    // textura correspondente no OpenGL.
+    if (!texturaBMP.carregar(
+        CAMINHO_TEXTURA,
+        mensagemErro
+    )) {
+        std::cerr
+            << "Erro ao carregar textura: "
+            << mensagemErro
+            << std::endl;
+
+        return 1;
+    }
 
     std::cout
         << "OBJ carregado com sucesso."
@@ -135,6 +156,18 @@ int main(int argc, char** argv) {
         << std::endl;
 
     std::cout
+        << "Textura BMP carregada: "
+        << CAMINHO_TEXTURA
+        << std::endl;
+
+    if (modelo.texturas.empty()) {
+        std::cout
+            << "Aviso: OBJ sem coordenadas vt. "
+            << "Textura nao sera aplicada."
+            << std::endl;
+    }
+
+    std::cout
         << "Controles de iluminacao:"
         << std::endl;
 
@@ -150,8 +183,7 @@ int main(int argc, char** argv) {
         << "3 - Alternar GL_LIGHT2"
         << std::endl;
 
-
-    // Registra as funcoes de callback.
+    // Registra os callbacks.
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
 
@@ -174,64 +206,56 @@ void initGL() {
 
     glClearDepth(1.0f);
 
-    // Mantem o teste de profundidade.
+    // Mantem o depth buffer.
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-    // Renderiza as faces preenchidas.
+    // Faces preenchidas.
     glPolygonMode(
         GL_FRONT_AND_BACK,
         GL_FILL
     );
 
-    // Texturas permanecem desativadas
-    // nesta etapa da M2.
+    // A textura sera ativada somente
+    // quando o modelo for desenhado.
     glDisable(GL_TEXTURE_2D);
 
-    // Configura as tres fontes e o
-    // material utilizado pelo OBJ.
+    // Preserva as tres fontes luminosas
+    // e o material ja implementados.
     inicializarIluminacao();
 }
 
 
 void display() {
-    // Limpa os buffers a cada redesenho.
     glClear(
         GL_COLOR_BUFFER_BIT |
         GL_DEPTH_BUFFER_BIT
     );
 
-    // Seleciona a matriz ModelView.
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Posicionamento fixo da camera.
+    // Camera.
     glTranslatef(
         0.0f,
         0.0f,
         -5.0f
     );
 
-    // Posiciona as luzes depois da
-    // camera e antes das transformacoes
-    // do modelo OBJ.
-    //
-    // Assim as luzes nao acompanham
-    // a rotacao e escala do objeto.
+    // Posiciona as luzes antes das
+    // transformacoes do objeto.
     posicionarLuzes();
 
-    // Salva a matriz antes das
-    // transformacoes especificas do objeto.
     glPushMatrix();
 
-    // 1. Transladar o modelo.
+    // 1. Translacao.
     glTranslatef(
         posicaoX,
         posicaoY,
         posicaoZ
     );
 
-    // 2. Rotacionar nos tres eixos.
+    // 2. Rotacao nos tres eixos.
     glRotatef(
         rotacaoX,
         1.0f, 0.0f, 0.0f
@@ -254,33 +278,42 @@ void display() {
         escalaTransformacao
     );
 
-    // 4. Escala automatica do OBJ.
+    // 4. Escala automatica.
     glScalef(
         escalaModelo,
         escalaModelo,
         escalaModelo
     );
 
-    // 5. Centraliza o modelo em relacao
-    // ao centro calculado no enquadramento.
+    // 5. Centraliza o modelo.
     glTranslatef(
         -centroModeloX,
         -centroModeloY,
         -centroModeloZ
     );
 
-    // Material e iluminacao ja foram
-    // configurados em Iluminacao.cpp.
-    // Nao precisamos definir glColor3f.
+    // Ativa a textura somente se
+    // existir um mapeamento UV no modelo.
+    if (!modelo.texturas.empty() &&
+        texturaBMP.carregada()) {
 
-    // Renderiza o OBJ usando GL_TRIANGLES
-    // e as normais enviadas por glNormal3f.
+        texturaBMP.ativar();
+    }
+    else {
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    // Desenha as faces triangulares.
+    // OBJRenderer envia normais, UVs
+    // e posicoes dos vertices.
     desenharModeloOBJ(modelo);
 
-    // Restaura a matriz anterior.
+    // Impede que a textura interfira
+    // em outros desenhos futuros.
+    glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
 
-    // Exibe o quadro final.
     glutSwapBuffers();
 }
 
@@ -304,7 +337,7 @@ void reshape(GLsizei width, GLsizei height) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    // Mantem a perspectiva da develop.
+    // Projecao em perspectiva.
     gluPerspective(
         45.0f,
         aspect,
@@ -316,7 +349,7 @@ void reshape(GLsizei width, GLsizei height) {
 }
 
 
-// Teclas comuns: escala, rotacao e luzes.
+// Controles de escala, rotacao e iluminacao.
 void keyboard(unsigned char key, int x, int y) {
     bool alterouCena = true;
 
@@ -324,6 +357,7 @@ void keyboard(unsigned char key, int x, int y) {
 
         // Encerra o programa.
     case 27:
+        texturaBMP.liberar();
         std::exit(0);
         break;
 
@@ -375,17 +409,17 @@ void keyboard(unsigned char key, int x, int y) {
         rotacaoZ -= PASSO_ROTACAO;
         break;
 
-        // Alterna a primeira fonte de luz.
+        // Alterna a primeira luz.
     case '1':
         alternarLuz(0);
         break;
 
-        // Alterna a segunda fonte de luz.
+        // Alterna a segunda luz.
     case '2':
         alternarLuz(1);
         break;
 
-        // Alterna a terceira fonte de luz.
+        // Alterna a terceira luz.
     case '3':
         alternarLuz(2);
         break;
@@ -395,46 +429,38 @@ void keyboard(unsigned char key, int x, int y) {
         break;
     }
 
-    // Redesenha quando uma transformacao
-    // ou um estado de luz e alterado.
     if (alterouCena) {
         glutPostRedisplay();
     }
 }
 
 
-// Teclas especiais: translacao nos eixos.
+// Translacao nos tres eixos.
 void keyboardSpecial(int key, int x, int y) {
     bool alterouTransformacao = true;
 
     switch (key) {
 
-        // Movimenta para a esquerda.
     case GLUT_KEY_LEFT:
         posicaoX -= PASSO_MOVIMENTO;
         break;
 
-        // Movimenta para a direita.
     case GLUT_KEY_RIGHT:
         posicaoX += PASSO_MOVIMENTO;
         break;
 
-        // Movimenta para cima.
     case GLUT_KEY_UP:
         posicaoY += PASSO_MOVIMENTO;
         break;
 
-        // Movimenta para baixo.
     case GLUT_KEY_DOWN:
         posicaoY -= PASSO_MOVIMENTO;
         break;
 
-        // Aproxima o modelo da camera.
     case GLUT_KEY_PAGE_UP:
         posicaoZ += PASSO_MOVIMENTO;
         break;
 
-        // Afasta o modelo da camera.
     case GLUT_KEY_PAGE_DOWN:
         posicaoZ -= PASSO_MOVIMENTO;
         break;
@@ -451,7 +477,7 @@ void keyboardSpecial(int key, int x, int y) {
 
 
 // Calcula o enquadramento inicial do OBJ.
-// Funcao preservada da implementacao anterior.
+// Mantem a logica existente na develop.
 void calcularEnquadramentoModelo() {
     if (modelo.vertices.empty()) {
         return;
@@ -471,9 +497,8 @@ void calcularEnquadramentoModelo() {
     std::sort(valoresY.begin(), valoresY.end());
     std::sort(valoresZ.begin(), valoresZ.end());
 
-    // Ignora os 1% menores e os 1% maiores
-    // valores para reduzir distorcoes causadas
-    // por vertices muito distantes.
+    // Ignora os 1% menores e maiores valores
+    // para reduzir a influencia de pontos extremos.
     const std::size_t quantidade = valoresX.size();
 
     const std::size_t inicio =
