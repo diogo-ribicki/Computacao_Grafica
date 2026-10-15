@@ -10,6 +10,7 @@
 #include "ModeloOBJ.hpp"
 #include "OBJLoader.hpp"
 #include "OBJRenderer.hpp"
+#include "Iluminacao.hpp"
 
 
 ModeloOBJ modelo;
@@ -75,7 +76,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(50, 50);
 
-    glutCreateWindow("M2 - Transformacoes OBJ");
+    glutCreateWindow("M2 - Iluminacao OBJ");
 
     initGL();
 
@@ -133,6 +134,22 @@ int main(int argc, char** argv) {
         << modelo.faces.size()
         << std::endl;
 
+    std::cout
+        << "Controles de iluminacao:"
+        << std::endl;
+
+    std::cout
+        << "1 - Alternar GL_LIGHT0"
+        << std::endl;
+
+    std::cout
+        << "2 - Alternar GL_LIGHT1"
+        << std::endl;
+
+    std::cout
+        << "3 - Alternar GL_LIGHT2"
+        << std::endl;
+
 
     // Registra as funcoes de callback.
     glutDisplayFunc(display);
@@ -167,10 +184,13 @@ void initGL() {
         GL_FILL
     );
 
-    // Iluminacao e textura serao
-    // implementadas em outras etapas.
-    glDisable(GL_LIGHTING);
+    // Texturas permanecem desativadas
+    // nesta etapa da M2.
     glDisable(GL_TEXTURE_2D);
+
+    // Configura as tres fontes e o
+    // material utilizado pelo OBJ.
+    inicializarIluminacao();
 }
 
 
@@ -191,6 +211,14 @@ void display() {
         0.0f,
         -5.0f
     );
+
+    // Posiciona as luzes depois da
+    // camera e antes das transformacoes
+    // do modelo OBJ.
+    //
+    // Assim as luzes nao acompanham
+    // a rotacao e escala do objeto.
+    posicionarLuzes();
 
     // Salva a matriz antes das
     // transformacoes especificas do objeto.
@@ -241,16 +269,12 @@ void display() {
         -centroModeloZ
     );
 
-    // Cor temporaria enquanto nao
-    // implementamos iluminacao e textura.
-    glColor3f(
-        0.8f,
-        0.8f,
-        0.8f
-    );
+    // Material e iluminacao ja foram
+    // configurados em Iluminacao.cpp.
+    // Nao precisamos definir glColor3f.
 
-    // Renderiza as faces do OBJ
-    // utilizando GL_TRIANGLES.
+    // Renderiza o OBJ usando GL_TRIANGLES
+    // e as normais enviadas por glNormal3f.
     desenharModeloOBJ(modelo);
 
     // Restaura a matriz anterior.
@@ -292,9 +316,9 @@ void reshape(GLsizei width, GLsizei height) {
 }
 
 
-// Teclas comuns: escala e rotacao.
+// Teclas comuns: escala, rotacao e luzes.
 void keyboard(unsigned char key, int x, int y) {
-    bool alterouTransformacao = true;
+    bool alterouCena = true;
 
     switch (key) {
 
@@ -351,14 +375,29 @@ void keyboard(unsigned char key, int x, int y) {
         rotacaoZ -= PASSO_ROTACAO;
         break;
 
+        // Alterna a primeira fonte de luz.
+    case '1':
+        alternarLuz(0);
+        break;
+
+        // Alterna a segunda fonte de luz.
+    case '2':
+        alternarLuz(1);
+        break;
+
+        // Alterna a terceira fonte de luz.
+    case '3':
+        alternarLuz(2);
+        break;
+
     default:
-        alterouTransformacao = false;
+        alterouCena = false;
         break;
     }
 
-    // Solicita um novo desenho somente
-    // quando uma transformacao for alterada.
-    if (alterouTransformacao) {
+    // Redesenha quando uma transformacao
+    // ou um estado de luz e alterado.
+    if (alterouCena) {
         glutPostRedisplay();
     }
 }
