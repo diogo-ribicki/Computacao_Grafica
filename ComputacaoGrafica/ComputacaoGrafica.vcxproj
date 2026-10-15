@@ -38,8 +38,8 @@
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"
-		Label="Configuration">
+        Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"
+        Label="Configuration">
 
 		<ConfigurationType>Application</ConfigurationType>
 		<UseDebugLibraries>true</UseDebugLibraries>
@@ -49,8 +49,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"
-		Label="Configuration">
+        Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"
+        Label="Configuration">
 
 		<ConfigurationType>Application</ConfigurationType>
 		<UseDebugLibraries>false</UseDebugLibraries>
@@ -61,8 +61,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"
-		Label="Configuration">
+        Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"
+        Label="Configuration">
 
 		<ConfigurationType>Application</ConfigurationType>
 		<UseDebugLibraries>true</UseDebugLibraries>
@@ -72,8 +72,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Release|x64'"
-		Label="Configuration">
+        Condition="'$(Configuration)|$(Platform)'=='Release|x64'"
+        Label="Configuration">
 
 		<ConfigurationType>Application</ConfigurationType>
 		<UseDebugLibraries>false</UseDebugLibraries>
@@ -92,81 +92,81 @@
 	</ImportGroup>
 
 	<ImportGroup
-		Label="PropertySheets"
-		Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        Label="PropertySheets"
+        Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
 
 		<Import
-			Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
-			Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
-			Label="LocalAppDataPlatform" />
+            Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
 
 	</ImportGroup>
 
 	<ImportGroup
-		Label="PropertySheets"
-		Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        Label="PropertySheets"
+        Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
 
 		<Import
-			Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
-			Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
-			Label="LocalAppDataPlatform" />
+            Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
 
 	</ImportGroup>
 
 	<ImportGroup
-		Label="PropertySheets"
-		Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        Label="PropertySheets"
+        Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 
 		<Import
-			Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
-			Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
-			Label="LocalAppDataPlatform" />
+            Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
 
 	</ImportGroup>
 
 	<ImportGroup
-		Label="PropertySheets"
-		Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        Label="PropertySheets"
+        Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 
 		<Import
-			Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
-			Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
-			Label="LocalAppDataPlatform" />
+            Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
 
 	</ImportGroup>
 
 	<PropertyGroup Label="UserMacros" />
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
 
 		<LinkIncremental>true</LinkIncremental>
 
 	</PropertyGroup>
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
 
 		<LinkIncremental>false</LinkIncremental>
 
 	</PropertyGroup>
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 
 		<LinkIncremental>true</LinkIncremental>
 
 	</PropertyGroup>
 
 	<PropertyGroup
-		Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 
 		<LinkIncremental>false</LinkIncremental>
 
 	</PropertyGroup>
 
 	<ItemDefinitionGroup
-		Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
 
 		<ClCompile>
 
@@ -193,7 +193,7 @@
 	</ItemDefinitionGroup>
 
 	<ItemDefinitionGroup
-		Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
 
 		<ClCompile>
 
@@ -228,7 +228,7 @@
 	</ItemDefinitionGroup>
 
 	<ItemDefinitionGroup
-		Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 
 		<ClCompile>
 
@@ -275,7 +275,7 @@
 	</ItemDefinitionGroup>
 
 	<ItemDefinitionGroup
-		Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 
 		<ClCompile>
 
@@ -339,6 +339,8 @@
 
 		<ClCompile Include="src\OBJRenderer.cpp" />
 
+		<ClCompile Include="src\Iluminacao.cpp" />
+
 	</ItemGroup>
 
 	<ItemGroup>
@@ -352,6 +354,8 @@
 		<ClInclude Include="include\OBJLoader.hpp" />
 
 		<ClInclude Include="include\OBJRenderer.hpp" />
+
+		<ClInclude Include="include\Iluminacao.hpp" />
 
 	</ItemGroup>
 
