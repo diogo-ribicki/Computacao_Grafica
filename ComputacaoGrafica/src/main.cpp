@@ -20,7 +20,7 @@ TexturaBMP texturaBMP;
 
 
 // Caminhos relativos a pasta do projeto.
-const std::string CAMINHO_MODELO = "data/radar.obj";
+const std::string CAMINHO_MODELO = "data/elepham.obj";
 const std::string CAMINHO_TEXTURA = "Textures/launch.bmp";
 
 
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(50, 50);
 
-    glutCreateWindow("M2 - Texturas OBJ");
+    glutCreateWindow("Computação Gráfica");
 
     // Inicializa o estado OpenGL.
     initGL();
