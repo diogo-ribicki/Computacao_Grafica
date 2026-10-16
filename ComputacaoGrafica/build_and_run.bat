@@ -43,7 +43,12 @@ if not exist "%EXE%" (
   exit /b 1
 )
 echo Running "%EXE%"
-start "" /wait "%EXE%"
+echo Diretorio atual: %CD%
+
+"%EXE%"
+
+echo.
+echo Codigo de saida: %ERRORLEVEL%
 pause
 endlocal
 exit /b 0
